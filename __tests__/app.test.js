@@ -103,3 +103,33 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
+describe("GET /api", () => {
+  test("returns 200 status code", () => {
+    return request(app).get("/api").expect(200);
+  });
+  test("returns an object describing all the available endpoints", () => {
+    return request(app)
+      .get("/api")
+      .then(({ body }) => {
+        expect(typeof body).toBe("object");
+        const endpoints = body.endpoints;
+        for (endpoint in endpoints) {
+          expect(endpoint.includes("api")).toBe(true);
+        }
+      });
+  });
+  test("returns an object describing all the available endpoints with correct properties", () => {
+    return request(app)
+      .get("/api")
+      .then(({ body }) => {
+        const endpoints = body.endpoints;
+        for (endpoint in endpoints) {
+          expect(endpoints[endpoint].hasOwnProperty("description")).toBe(true);
+          expect(endpoints[endpoint].hasOwnProperty("queries")).toBe(true);
+          expect(endpoints[endpoint].hasOwnProperty("exampleResponse")).toBe(
+            true
+          );
+        }
+      });
+  });
+});
