@@ -14,7 +14,7 @@ describe("GET /api/topics", () => {
   test("returns 200 status code", () => {
     return request(app).get("/api/topics").expect(200);
   });
-  test("returns an array of topic objects with the correct properties", () => {
+  test("returns an array of topic objects", () => {
     return request(app)
       .get("/api/topics")
       .then(({ body }) => {
@@ -25,6 +25,17 @@ describe("GET /api/topics", () => {
         expect(typeof body).toBe("object");
         expect(body.topics[0]).toEqual(expected);
         expect(body.topics).toHaveLength(3);
+      });
+  });
+  test("returns an array of topic objects with the correct properties", () => {
+    return request(app)
+      .get("/api/topics")
+      .then(({ body }) => {
+        const topics = body.topics;
+        topics.forEach((topic) => {
+          expect(typeof topic.description).toBe("string");
+          expect(typeof topic.slug).toBe("string");
+        });
       });
   });
 });
