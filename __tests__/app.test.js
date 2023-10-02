@@ -28,3 +28,15 @@ describe("GET /api/topics", () => {
       });
   });
 });
+describe("ALL /invalidPath", () => {
+  test("returns 404 status code", () => {
+    return request(app).get("/invalidPath").expect(404);
+  });
+  test("returns a message of path not found", () => {
+    return request(app)
+      .get("/invalidPath")
+      .then(({ body }) => {
+        expect(body.msg).toBe("Path not found");
+      });
+  });
+});
