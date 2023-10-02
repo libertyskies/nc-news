@@ -1,3 +1,5 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+To connect the databases, create a .env.development file and a .env.test file linking to the two separate databases.
+
+Create two environment variables inside these files with assignment of PGDATABASE to the database names.
