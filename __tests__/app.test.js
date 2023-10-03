@@ -198,6 +198,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         const comments = body.comments;
         comments.forEach((comment) => {
           expect(typeof comment).toBe("object");
+          expect(comment.article_id).toBe(1);
           expect(typeof comment.author).toBe("string");
           expect(typeof comment.body).toBe("string");
           expect(typeof comment.comment_id).toBe("number");
