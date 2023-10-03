@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkIdExists } = require("../db/seeds/utils");
 
 exports.fetchArticleById = async (id) => {
   if (/\D/.test(id)) {
@@ -20,6 +21,7 @@ exports.fetchArticleById = async (id) => {
       msg: "ID not found",
     });
   }
+
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1;`, [id])
     .then(({ rows }) => {
