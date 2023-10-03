@@ -133,3 +133,57 @@ describe("GET /api", () => {
       });
   });
 });
+
+describe("GET /api/articles", () => {
+  test("returns 200 status code", () => {
+    return request(app).get("/api/articles").expect(200);
+  });
+  test("returns an array of article objects", () => {
+    return request(app)
+      .get("/api/articles")
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(13);
+      });
+  });
+  test("returns an array of article objects with correct properties", () => {
+    return request(app)
+      .get("/api/articles")
+      .then(({ body }) => {
+        const { articles } = body;
+        articles.forEach((article) => {
+          expect(article.hasOwnProperty("article_id")).toBe(true);
+          expect(article.hasOwnProperty("title")).toBe(true);
+          expect(article.hasOwnProperty("topic")).toBe(true);
+          expect(article.hasOwnProperty("author")).toBe(true);
+          expect(article.hasOwnProperty("votes")).toBe(true);
+          expect(article.hasOwnProperty("article_img_url")).toBe(true);
+          expect(article.hasOwnProperty("comment_count")).toBe(true);
+          expect(article.hasOwnProperty("body")).toBe(false);
+        });
+      });
+  });
+  test("returns an array of article objects sorted by date in descending order as default", () => {
+    return request(app)
+      .get("/api/articles")
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("returns a 400 status code and message when passed an invalid sortby query", () => {
+    return request(app)
+      .get("/api/articles?sortby=invalidQuery")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid sort by query");
+      });
+  });
+  test("returns a 400 status code and message when passed an invalid order by query", () => {
+    return request(app)
+      .get("/api/articles?order=invalidOrder")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid order by query");
+      });
+  });
+});
