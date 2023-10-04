@@ -24,14 +24,14 @@ exports.formatComments = (comments, idLookup) => {
   });
 };
 
-exports.checkIdExists = async (table, column, value) => {
+exports.checkValueExists = async (table, column, value) => {
   const query = format(`SELECT * FROM %I WHERE %I = $1;`, table, column);
   const dbOutput = await db.query(query, [value]);
 
   if (dbOutput.rows.length === 0) {
     return Promise.reject({
       status: 404,
-      msg: "ID not found",
+      msg: `${column} not found`,
     });
   }
 };

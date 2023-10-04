@@ -236,7 +236,89 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/40000004/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("ID not found");
+        expect(body.msg).toBe("article_id not found");
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("returns a 201 status code when passed a new comment with the correct properties", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "The wonderful thing about Tiggers is that I'm the only one",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201);
+  });
+  test("returns a new comment object with correct properties when passed a valid new comment", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "The wonderful thing about Tiggers is that I'm the only one",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment[0].article_id).toBe(1);
+        expect(comment[0].comment_id).toBe(19);
+        expect(comment[0].body).toEqual(newComment.body);
+        expect(comment[0].author).toEqual(newComment.username);
+        expect(comment[0].votes).toBe(0);
+        expect(typeof comment[0].created_at).toBe("string");
+      });
+  });
+  test("returns a 400 status code and message when passed a comment object with no body property", () => {
+    const testComment = {
+      username: "rogersop",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(testComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Insufficient data");
+      });
+  });
+  test("returns a 400 status code and message when passed a comment object with no username property", () => {
+    const testComment = {
+      body: "The wonderful thing about Tiggers is that I'm the only one",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(testComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Insufficient data");
+      });
+  });
+  test("returns a 404 status code when passed a comment object to a nonexisting article id property", () => {
+    const testComment = {
+      username: "rogersop",
+      body: "The wonderful thing about Tiggers is that I'm the only one",
+    };
+    return request(app)
+      .post("/api/articles/10000000/comments")
+      .send(testComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article_id not found");
+      });
+  });
+  test("returns a 404 status code when passed a comment object with a nonexisting username property", () => {
+    const testComment = {
+      username: "noSuchUsername",
+      body: "The wonderful thing about Tiggers is that I'm the only one",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(testComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("username not found");
       });
   });
 });
