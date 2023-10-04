@@ -9,24 +9,18 @@ exports.fetchArticleById = async (id) => {
     });
   }
 
-  const allIds = await db.query(`SELECT DISTINCT article_id FROM articles;`);
+  await checkValueExists("articles", "article_id", id);
 
-  const existingIds = allIds.rows;
-  const articleIdExists = existingIds.find((article) => {
-    return article.article_id === Number(id);
-  });
-  if (!articleIdExists) {
-    return Promise.reject({
-      status: 404,
-      msg: "ID not found",
-    });
-  }
+  const query = `SELECT articles.article_id, articles.author, title, topic, articles.created_at, articles.body, articles.votes, article_img_url, 
+COUNT(comments.article_id) AS comment_count 
+FROM articles
+LEFT JOIN comments USING(article_id)
+WHERE articles.article_id = $1
+GROUP BY articles.title, articles.article_id;`;
 
-  return db
-    .query(`SELECT * FROM articles WHERE article_id = $1;`, [id])
-    .then(({ rows }) => {
-      return rows;
-    });
+  const { rows } = await db.query(query, [id]);
+
+  return rows;
 };
 
 exports.fetchArticle = async (sortby = "date", order = "DESC") => {
