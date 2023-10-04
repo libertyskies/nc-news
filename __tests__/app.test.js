@@ -252,7 +252,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(201);
   });
-  test("returns a 201 status code when passed a new comment with the correct properties", () => {
+  test("returns a new comment object with correct properties when passed a valid new comment", () => {
     const newComment = {
       username: "rogersop",
       body: "The wonderful thing about Tiggers is that I'm the only one",
