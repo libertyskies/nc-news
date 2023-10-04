@@ -524,3 +524,23 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+describe("GET /api/users", () => {
+  test("returns a 200 status code", () => {
+    return request(app).get("/api/users").expect(200);
+  });
+  test("returns an array of objects with correct properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        expect(typeof body).toBe("object");
+        const { users } = body;
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(typeof user.username).toBe("string");
+          expect(typeof user.name).toBe("string");
+          expect(typeof user.avatar_url).toBe("string");
+        });
+      });
+  });
+});
