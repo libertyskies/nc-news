@@ -1,5 +1,5 @@
 const db = require("../db/connection");
-const { checkIdExists } = require("../db/seeds/utils");
+const { checkValueExists } = require("../db/seeds/utils");
 
 exports.fetchArticleById = async (id) => {
   if (/\D/.test(id)) {
@@ -59,6 +59,36 @@ exports.fetchArticle = async (sortby = "date", order = "DESC") => {
   ORDER BY ${validSortBys[sortby]} ${order};`;
 
   const { rows } = await db.query(query);
+
+  return rows;
+};
+
+exports.updateArticle = async (inc_votes, id) => {
+  if (/\D/.test(id)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid ID type",
+    });
+  }
+  await checkValueExists("articles", "article_id", id);
+
+  const dbOutput = await db.query(
+    `SELECT votes FROM articles 
+     WHERE article_id = $1;`,
+    [id]
+  );
+
+  const currentVotes = Number(dbOutput.rows[0].votes);
+
+  const newVotes = currentVotes + inc_votes;
+
+  const { rows } = await db.query(
+    `UPDATE articles
+     SET votes = $1
+     WHERE article_id = $2 
+     RETURNING *;`,
+    [newVotes, id]
+  );
 
   return rows;
 };

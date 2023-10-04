@@ -3,10 +3,12 @@ const { getTopics } = require("./controllers/topics.controller");
 const {
   getArticleById,
   getArticle,
+  patchArticle,
 } = require("./controllers/articles.controller");
 const {
   handleCustomErrors,
   handleServerErrors,
+  handlePSQLErrors,
 } = require("./controllers/errors.controller");
 const { getEndpoints } = require("./controllers/endpoints.controller");
 const {
@@ -33,11 +35,15 @@ app.post("/api/articles/:article_id/comments", postComment);
 
 app.delete("/api/comments/:comment_id", deleteComment);
 
+app.patch("/api/articles/:article_id", patchArticle);
+
 app.all("/*", (req, res, next) => {
   res.status(404).send({ msg: "Path not found" });
 });
 
 app.use(handleCustomErrors);
+
+app.use(handlePSQLErrors);
 
 app.use(handleServerErrors);
 

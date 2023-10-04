@@ -6,6 +6,15 @@ exports.handleCustomErrors = (err, req, res, next) => {
   }
 };
 
+exports.handlePSQLErrors = (err, req, res, next) => {
+  if (err.code === "22003") {
+    res.status(400).send({ msg: "Value out of accepted range" });
+  }
+  if (err.code === "22P02") {
+    res.status(400).send({ msg: "Invalid value" });
+  }
+};
+
 exports.handleServerErrors = (err, req, res, next) => {
   console.log(err);
   res.status(500).send({ msg: "Internal Server Error" });
