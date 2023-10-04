@@ -322,7 +322,47 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
-
+describe("DELETE /api/comments/:comment_id", () => {
+  test("responds with 204 status code", () => {
+    return request(app).delete("/api/comments/1").send().expect(204);
+  });
+  test("deletes the requested comment when passed to a valid id", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .send()
+      .then(() => {
+        return connection.query("SELECT * FROM comments;");
+      })
+      .then((result) => {
+        expect(result.rows).toHaveLength(17);
+        expect(result.rows[0].comment_id).not.toBe(1);
+      });
+  });
+  test("deletes the requested comment when passed to a different valid id", () => {
+    return request(app)
+      .delete("/api/comments/2")
+      .send()
+      .then(() => {
+        return connection.query("SELECT * FROM comments;");
+      })
+      .then((result) => {
+        expect(result.rows).toHaveLength(17);
+        expect(result.rows[1].comment_id).not.toBe(2);
+      });
+  });
+  test("returns 404 status code and message when passed a nonexistent comment id", () => {
+    return request(app)
+      .delete("/api/comments/9999")
+      .send()
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment_id not found");
+      });
+  });
+  test("returns 400 status code and message when passed an invalid comment id", () => {
+    return request(app).delete("/api/comments/invalidId").send();
+  });
+});
 describe("PATCH /api/articles/:article_id", () => {
   test("returns a 200 status code when passed a valid object", () => {
     const testPatch = {

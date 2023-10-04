@@ -79,6 +79,11 @@
       ]
     }
   },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes a comment by comment_id",
+    "queries": [],
+    "exampleResponse": {}
+  },
   "PATCH /api/articles/:article_id": {
     "description": "updates an article by article_id and responds with the updated article",
     "queries": [],

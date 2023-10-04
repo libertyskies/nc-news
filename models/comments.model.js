@@ -36,3 +36,19 @@ exports.createComment = async (comment, id) => {
   );
   return rows;
 };
+
+exports.removeComment = async (id) => {
+  if (/\D/.test(id)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid ID type",
+    });
+  }
+
+  await checkValueExists("comments", "comment_id", id);
+  const { rows } = await db.query(
+    `DELETE FROM comments WHERE comment_id = $1;`,
+    [id]
+  );
+  return rows;
+};
