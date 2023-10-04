@@ -399,6 +399,30 @@ describe("PATCH /api/articles/:article_id", () => {
         });
       });
   });
+  test("returns an updated article when passed a object with extra properties, including the correct property", () => {
+    const testPatch = {
+      inc_votes: 10,
+      other_key: "otherValue",
+    };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(testPatch)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article[0].votes).toBe(10);
+        expect(article[0]).toMatchObject({
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "some gifs",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 10,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
   test("returns a 404 status code when passed a valid object to a nonexistent article id", () => {
     const testPatch = {
       inc_votes: 10,
@@ -433,6 +457,30 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid ID type");
+      });
+  });
+  test("returns a 400 status code and message when passed an object with an invalid value to a valid article id", () => {
+    const testPatch = {
+      inc_votes: "invalidValue",
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(testPatch)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid value");
+      });
+  });
+  test("returns a 400 status code and message when passed an object with an invalid key to a valid article id", () => {
+    const testPatch = {
+      invalid_key: 100,
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(testPatch)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid value");
       });
   });
 });
