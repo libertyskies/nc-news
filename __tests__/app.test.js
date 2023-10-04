@@ -89,7 +89,7 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/9999999")
       .then(({ body }) => {
-        expect(body.msg).toBe("ID not found");
+        expect(body.msg).toBe("article_id not found");
       });
   });
   test("returns 400 status code when passed an invalid id", () => {
