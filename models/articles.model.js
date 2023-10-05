@@ -26,6 +26,14 @@ GROUP BY articles.title, articles.article_id;`;
 exports.fetchArticle = async (sortby = "date", order = "DESC", topic) => {
   const validSortBys = {
     date: "created_at",
+    created_at: "created_at",
+    title: "title",
+    author: "author",
+    votes: "votes",
+    id: "article_id",
+    img: "article_img_url",
+    article_img_url: "article_img_url",
+    topic: "topic",
   };
 
   if (!(sortby in validSortBys)) {
