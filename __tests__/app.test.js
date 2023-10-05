@@ -524,3 +524,24 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+describe("GET /api/users", () => {
+  test("returns a 200 status code", () => {
+    return request(app).get("/api/users").expect(200);
+  });
+  test("returns an array of objects with correct properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect.objectContaining({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+});

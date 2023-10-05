@@ -100,5 +100,18 @@
         }
       ]
     }
+  },
+  "GET /api/users": {
+    "description": "",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "mikeandike",
+          "name": "mike",
+          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+        }
+      ]
+    }
   }
 }
