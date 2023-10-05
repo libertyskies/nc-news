@@ -23,7 +23,7 @@ GROUP BY articles.title, articles.article_id;`;
   return rows;
 };
 
-exports.fetchArticle = async (sortby = "date", order = "DESC") => {
+exports.fetchArticle = async (sortby = "date", order = "DESC", topic) => {
   const validSortBys = {
     date: "created_at",
   };
@@ -44,15 +44,24 @@ exports.fetchArticle = async (sortby = "date", order = "DESC") => {
     });
   }
 
-  let query = `
-  SELECT articles.article_id, articles.author, title, topic, articles.created_at, articles.votes, article_img_url, 
+  let query = `SELECT articles.article_id, articles.author, title, topic, articles.created_at, articles.votes, article_img_url, 
   COUNT(comments.article_id) AS comment_count 
   FROM articles
-  LEFT JOIN comments ON articles.article_id = comments.article_id 
+  LEFT JOIN comments USING(article_id)`;
+
+  const values = [];
+
+  if (topic !== undefined) {
+    await checkValueExists("articles", "topic", topic);
+    query += `WHERE topic = $1 `;
+    values.push(topic);
+  }
+
+  query += `
   GROUP BY articles.title, articles.article_id
   ORDER BY ${validSortBys[sortby]} ${order};`;
 
-  const { rows } = await db.query(query);
+  const { rows } = await db.query(query, values);
 
   return rows;
 };

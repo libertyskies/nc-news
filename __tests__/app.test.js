@@ -525,3 +525,72 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+describe("GET /api/articles?topic", () => {
+  test("returns 200 status code and an array filtered by the given topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(12);
+        articles.forEach((article) => {
+          expect(article.hasOwnProperty("article_id")).toBe(true);
+          expect(article.hasOwnProperty("title")).toBe(true);
+          expect(article.hasOwnProperty("topic")).toBe(true);
+          expect(article.hasOwnProperty("author")).toBe(true);
+          expect(article.hasOwnProperty("votes")).toBe(true);
+          expect(article.hasOwnProperty("article_img_url")).toBe(true);
+          expect(article.hasOwnProperty("comment_count")).toBe(true);
+          expect(article.hasOwnProperty("body")).toBe(false);
+        });
+      });
+  });
+});
+test("returns a 404 status code when the query has a nonexistent topic", () => {
+  return request(app)
+    .get("/api/articles?topic=newtopic")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("topic not found");
+    });
+});
+test("returns a 200 status code and an array of articles when passed a nonexistent query", () => {
+  return request(app)
+    .get("/api/articles?nonsense=mitch")
+    .expect(200)
+    .then(({ body }) => {
+      const { articles } = body;
+      expect(articles).toHaveLength(13);
+      articles.forEach((article) => {
+        expect(article.hasOwnProperty("article_id")).toBe(true);
+        expect(article.hasOwnProperty("title")).toBe(true);
+        expect(article.hasOwnProperty("topic")).toBe(true);
+        expect(article.hasOwnProperty("author")).toBe(true);
+        expect(article.hasOwnProperty("votes")).toBe(true);
+        expect(article.hasOwnProperty("article_img_url")).toBe(true);
+        expect(article.hasOwnProperty("comment_count")).toBe(true);
+        expect(article.hasOwnProperty("body")).toBe(false);
+      });
+    });
+});
+describe("GET /api/users", () => {
+  test("returns a 200 status code", () => {
+    return request(app).get("/api/users").expect(200);
+  });
+  test("returns an array of objects with correct properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect.objectContaining({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+});
