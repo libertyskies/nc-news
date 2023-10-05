@@ -687,3 +687,117 @@ describe("GET /api/users/:username", () => {
       });
   });
 });
+describe("PATCH /api/comments/:comment_id", () => {
+  test("returns 200 status code when passed a valid object", () => {
+    const testPatch = {
+      inc_votes: 1,
+    };
+    return request(app).patch("/api/comments/2").send(testPatch).expect(200);
+  });
+  test("returns an updated property of the comment when passed a valid object", () => {
+    const testPatch = {
+      inc_votes: 10,
+    };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(testPatch)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment[0].votes).toBe(26);
+        expect(comment[0]).toMatchObject({
+          author: "butter_bridge",
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          created_at: "2020-04-06T12:17:00.000Z",
+          votes: 26,
+        });
+      });
+  });
+  test("returns an updated comment when passed a valid object with a decrementing property", () => {
+    const testPatch = {
+      inc_votes: -10,
+    };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(testPatch)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment[0].votes).toBe(6);
+      });
+  });
+  test("returns an updated comment when passed an object with extra properties, including the correct property", () => {
+    const testPatch = {
+      inc_votes: 10,
+      other_key: "otherValue",
+    };
+    return request(app)
+      .patch("/api/comments/3")
+      .send(testPatch)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment[0].votes).toBe(110);
+      });
+  });
+  test("returns a 404 status code when passed a valid object to a nonexistent comment id", () => {
+    const testPatch = {
+      inc_votes: 10,
+    };
+    return request(app)
+      .patch("/api/comments/40004")
+      .send(testPatch)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment_id not found");
+      });
+  });
+  test("returns a 400 status code and message when passed a valid object to an id too large for an integer", () => {
+    const testPatch = {
+      inc_votes: 10,
+    };
+    return request(app)
+      .patch("/api/comments/400000000000000000")
+      .send(testPatch)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Value out of accepted range");
+      });
+  });
+  test("returns a 400 status code and message when passed a valid object to an invalid comment id", () => {
+    const testPatch = {
+      inc_votes: 10,
+    };
+    return request(app)
+      .patch("/api/comments/invalidId")
+      .send(testPatch)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid ID type");
+      });
+  });
+  test("returns a 400 status code and message when passed an object with an invalid value to a valid comment id", () => {
+    const testPatch = {
+      inc_votes: "invalidValue",
+    };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(testPatch)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid value");
+      });
+  });
+  test("returns a 400 status code and message when passed an object with an invalid key to a valid comment id", () => {
+    const testPatch = {
+      invalid_key: 100,
+    };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(testPatch)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid value");
+      });
+  });
+});
