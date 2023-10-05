@@ -113,7 +113,7 @@
     }
   },
   "GET /api/users": {
-    "description": "",
+    "description": "serves an array of users",
     "queries": [],
     "exampleResponse": {
       "users": [
@@ -121,6 +121,35 @@
           "username": "mikeandike",
           "name": "mike",
           "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+        }
+      ]
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "serves an array of user for the given username",
+    "queries": [],
+    "exampleResponse": {
+      "user": [
+        {
+          "username": "mikeandike",
+          "name": "mike",
+          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+        }
+      ]
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates a comment by comment_id and responds with the updated comment",
+    "queries": [],
+    "exampleResponse": {
+      "comment": [
+        {
+          "comment_id": 5,
+          "votes": 10,
+          "created_at": "2020-11-03T21:00:00.000Z",
+          "author": "icellusedkars",
+          "body": "I hate streaming noses",
+          "article_id": 1
         }
       ]
     }
