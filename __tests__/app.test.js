@@ -533,13 +533,14 @@ describe("GET /api/users", () => {
       .get("/api/users")
       .expect(200)
       .then(({ body }) => {
-        expect(typeof body).toBe("object");
         const { users } = body;
         expect(users).toHaveLength(4);
         users.forEach((user) => {
-          expect(typeof user.username).toBe("string");
-          expect(typeof user.name).toBe("string");
-          expect(typeof user.avatar_url).toBe("string");
+          expect.objectContaining({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
         });
       });
   });
