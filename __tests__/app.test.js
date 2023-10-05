@@ -238,23 +238,22 @@ describe("GET /api/articles", () => {
           expect(articles).toBeSortedBy("created_at", { descending: true });
         });
     });
-  });
-
-  test("returns a 400 status code and message when passed an invalid sortby query", () => {
-    return request(app)
-      .get("/api/articles?sortby=invalidQuery")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid sort by query");
-      });
-  });
-  test("returns a 400 status code and message when passed an invalid order by query", () => {
-    return request(app)
-      .get("/api/articles?order=invalidOrder")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid order by query");
-      });
+    test("returns a 400 status code and message when passed an invalid sortby query", () => {
+      return request(app)
+        .get("/api/articles?sortby=invalidQuery")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid sort by query");
+        });
+    });
+    test("returns a 400 status code and message when passed an invalid order by query", () => {
+      return request(app)
+        .get("/api/articles?order=invalidOrder")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid order by query");
+        });
+    });
   });
 });
 describe("GET /api/articles/:article_id/comments", () => {
