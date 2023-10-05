@@ -614,33 +614,33 @@ describe("GET /api/articles?topic", () => {
         });
       });
   });
-});
-test("returns a 404 status code when the query has a nonexistent topic", () => {
-  return request(app)
-    .get("/api/articles?topic=newtopic")
-    .expect(404)
-    .then(({ body }) => {
-      expect(body.msg).toBe("topic not found");
-    });
-});
-test("returns a 200 status code and an array of articles when passed a nonexistent query", () => {
-  return request(app)
-    .get("/api/articles?nonsense=mitch")
-    .expect(200)
-    .then(({ body }) => {
-      const { articles } = body;
-      expect(articles).toHaveLength(13);
-      articles.forEach((article) => {
-        expect(article.hasOwnProperty("article_id")).toBe(true);
-        expect(article.hasOwnProperty("title")).toBe(true);
-        expect(article.hasOwnProperty("topic")).toBe(true);
-        expect(article.hasOwnProperty("author")).toBe(true);
-        expect(article.hasOwnProperty("votes")).toBe(true);
-        expect(article.hasOwnProperty("article_img_url")).toBe(true);
-        expect(article.hasOwnProperty("comment_count")).toBe(true);
-        expect(article.hasOwnProperty("body")).toBe(false);
+  test("returns a 404 status code when the query has a nonexistent topic", () => {
+    return request(app)
+      .get("/api/articles?topic=newtopic")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("topic not found");
       });
-    });
+  });
+  test("returns a 200 status code and an array of articles when passed a nonexistent query", () => {
+    return request(app)
+      .get("/api/articles?nonsense=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(13);
+        articles.forEach((article) => {
+          expect(article.hasOwnProperty("article_id")).toBe(true);
+          expect(article.hasOwnProperty("title")).toBe(true);
+          expect(article.hasOwnProperty("topic")).toBe(true);
+          expect(article.hasOwnProperty("author")).toBe(true);
+          expect(article.hasOwnProperty("votes")).toBe(true);
+          expect(article.hasOwnProperty("article_img_url")).toBe(true);
+          expect(article.hasOwnProperty("comment_count")).toBe(true);
+          expect(article.hasOwnProperty("body")).toBe(false);
+        });
+      });
+  });
 });
 describe("GET /api/users", () => {
   test("returns a 200 status code", () => {
@@ -660,6 +660,30 @@ describe("GET /api/users", () => {
             avatar_url: expect.any(String),
           });
         });
+      });
+  });
+});
+describe("GET /api/users/:username", () => {
+  test("returns a 200 status code and user object when passed an existing username", () => {
+    return request(app)
+      .get("/api/users/rogersop")
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user[0]).toMatchObject({
+          username: "rogersop",
+          name: "paul",
+          avatar_url:
+            "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+        });
+      });
+  });
+  test("returns a 404 status code and message when passed a nonexistent username", () => {
+    return request(app)
+      .get("/api/users/noSuchUsername")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("username not found");
       });
   });
 });
