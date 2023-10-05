@@ -89,7 +89,7 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/9999999")
       .then(({ body }) => {
-        expect(body.msg).toBe("ID not found");
+        expect(body.msg).toBe("article_id not found");
       });
   });
   test("returns 400 status code when passed an invalid id", () => {
@@ -163,13 +163,83 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("returns an array of article objects sorted by date in descending order as default", () => {
-    return request(app)
-      .get("/api/articles")
-      .then(({ body }) => {
-        expect(body.articles).toBeSortedBy("created_at", { descending: true });
-      });
+  describe("queries", () => {
+    test("returns an array of article objects sorted by date in descending order as default", () => {
+      return request(app)
+        .get("/api/articles")
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
+    test("returns an array of article objects sorted by id and allows for an asc order", () => {
+      return request(app)
+        .get("/api/articles?sortby=id&order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("article_id");
+        });
+    });
+    test("returns an array of article objects sorted by votes in descending order", () => {
+      return request(app)
+        .get("/api/articles?sortby=votes&order=desc")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("votes", { descending: true });
+        });
+    });
+    test("returns an array of article objects sorted by title", () => {
+      return request(app)
+        .get("/api/articles?sortby=title")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("title", { descending: true });
+        });
+    });
+    test("returns an array of article objects sorted by author", () => {
+      return request(app)
+        .get("/api/articles?sortby=author")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("author", { descending: true });
+        });
+    });
+    test("returns an array of article objects sorted by topic", () => {
+      return request(app)
+        .get("/api/articles?sortby=topic")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("topic", { descending: true });
+        });
+    });
+    test("returns an array of article objects sorted by img url", () => {
+      return request(app)
+        .get("/api/articles?sortby=img")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("article_img_url", {
+            descending: true,
+          });
+        });
+    });
+    test("returns an array of article objects sorted by date created when passed the column name", () => {
+      return request(app)
+        .get("/api/articles?sortby=created_at")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+        });
+    });
   });
+
   test("returns a 400 status code and message when passed an invalid sortby query", () => {
     return request(app)
       .get("/api/articles?sortby=invalidQuery")
