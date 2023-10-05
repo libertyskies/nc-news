@@ -17,6 +17,7 @@ FROM articles
 LEFT JOIN comments USING(article_id)
 WHERE articles.article_id = $1
 GROUP BY articles.title, articles.article_id;`;
+
   const { rows } = await db.query(query, [id]);
 
   return rows;
