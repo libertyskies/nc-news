@@ -68,17 +68,18 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/1")
       .then(({ body }) => {
         const { article } = body;
-        article.forEach((obj) => {
-          expect(obj.article_id).toBe(1);
-          expect(obj.topic).toBe("mitch");
-          expect(obj.author).toBe("butter_bridge");
-          expect(obj.body).toBe("I find this existence challenging");
-          expect(obj.created_at).toBe("2020-07-09T20:11:00.000Z");
-          expect(obj.votes).toBe(100);
-          expect(obj.title).toBe("Living in the shadow of a great man");
-          expect(obj.article_img_url).toBe(
+        article.forEach((article) => {
+          expect(article.article_id).toBe(1);
+          expect(article.topic).toBe("mitch");
+          expect(article.author).toBe("butter_bridge");
+          expect(article.body).toBe("I find this existence challenging");
+          expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
+          expect(article.votes).toBe(100);
+          expect(article.title).toBe("Living in the shadow of a great man");
+          expect(article.article_img_url).toBe(
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
           );
+          expect(article.comment_count).toBe("11");
         });
       });
   });
