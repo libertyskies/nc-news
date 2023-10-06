@@ -153,5 +153,12 @@
         }
       ]
     }
+  },
+  "POST /api/topics": {
+    "description": "creates a new topic and returns the topic",
+    "queries": [],
+    "exampleResponse": {
+      "topic": [{ "slug": "football", "description": "Footie!" }]
+    }
   }
 }
