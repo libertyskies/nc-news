@@ -106,7 +106,6 @@ exports.updateArticle = async (inc_votes, id) => {
 
 exports.createArticle = async (article) => {
   if (!article.author || !article.title || !article.body || !article.topic) {
-    console.log("in here");
     return Promise.reject({
       status: 400,
       msg: "Insufficient data",
