@@ -927,6 +927,65 @@ describe("POST /api/articles", () => {
       });
   });
 });
+describe("POST /api/topics", () => {
+  test("returns 201 status code and topic when passed a valid topic object", () => {
+    const testTopic = {
+      slug: "Winne the Pooh",
+      description: "friends created by A. A. Milne",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(testTopic)
+      .expect(201)
+      .then(({ body }) => {
+        const { topic } = body;
+        expect(topic[0]).toMatchObject(testTopic);
+      });
+  });
+  test("returns 201 status code when passed an object with additional unnecessary properties", () => {
+    const testTopic = {
+      slug: "Winnie the Pooh",
+      description: "friends created by A. A. Milne",
+      friends: ["Eeyore", "Piglet", "Owl"],
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(testTopic)
+      .expect(201)
+      .then(({ body }) => {
+        const { topic } = body;
+        expect(topic[0]).toMatchObject({
+          slug: "Winnie the Pooh",
+          description: "friends created by A. A. Milne",
+        });
+        expect(topic[0].hasOwnProperty("friends")).toBe(false);
+      });
+  });
+  test("returns 400 status code and message when passed an object with no slug property", () => {
+    const testTopic = {
+      description: "friends created by A. A. Milne",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(testTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Insufficient data");
+      });
+  });
+  test("returns 400 status code and message when passed an object with no description property", () => {
+    const testTopic = {
+      slug: "Winnie the Pooh",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(testTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Insufficient data");
+      });
+  });
+});
 describe.only("GET /api/articles?limit", () => {
   test("returns 200 status code", () => {});
 });
