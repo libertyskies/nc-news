@@ -7,11 +7,12 @@ const {
   getArticleById,
   getArticle,
   patchArticle,
+  postArticle,
 } = require("../controllers/articles.controller");
 
 const articleRouter = express.Router();
 
-articleRouter.route("/").get(getArticle);
+articleRouter.route("/").get(getArticle).post(postArticle);
 
 articleRouter.route("/:article_id").get(getArticleById).patch(patchArticle);
 

@@ -103,3 +103,43 @@ exports.updateArticle = async (inc_votes, id) => {
 
   return rows;
 };
+
+exports.createArticle = async (article) => {
+  if (!article.author || !article.title || !article.body || !article.topic) {
+    console.log("in here");
+    return Promise.reject({
+      status: 400,
+      msg: "Insufficient data",
+    });
+  }
+  await checkValueExists("users", "username", article.author);
+
+  await checkValueExists("topics", "slug", article.topic);
+
+  const values = [article.author, article.title, article.body, article.topic];
+  let query = `INSERT INTO articles (author, title, body, topic`;
+
+  if (article.article_img_url) {
+    query += `, article_img_url) VALUES ($1, $2, $3, $4, $5`;
+    values.push(article.article_img_url);
+  } else {
+    query += `) VALUES ($1, $2, $3, $4`;
+  }
+
+  query += `) RETURNING *;`;
+
+  const dbOutput = await db.query(query, values);
+
+  const newArticleId = dbOutput.rows[0].article_id;
+
+  const returningQuery = `SELECT articles.article_id, articles.author, title, topic, articles.body, articles.created_at, articles.votes, article_img_url,
+  COUNT(comments.article_id) AS comment_count 
+  FROM articles
+   FULL JOIN comments USING(article_id)
+   WHERE articles.article_id = $1
+   GROUP BY articles.title, articles.article_id;`;
+
+  const { rows } = await db.query(returningQuery, [newArticleId]);
+
+  return rows;
+};
