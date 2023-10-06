@@ -51,7 +51,6 @@ describe("ALL /invalidPath", () => {
       });
   });
 });
-
 describe("GET /api/articles/:article_id", () => {
   test("returns 200 status code", () => {
     return request(app).get("/api/articles/1").expect(200);
@@ -90,7 +89,7 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/9999999")
       .then(({ body }) => {
-        expect(body.msg).toBe("article_id not found");
+        expect(body.msg).toBe("ID not found");
       });
   });
   test("returns 400 status code when passed an invalid id", () => {
@@ -134,7 +133,6 @@ describe("GET /api", () => {
       });
   });
 });
-
 describe("GET /api/articles", () => {
   test("returns 200 status code", () => {
     return request(app).get("/api/articles").expect(200);
@@ -306,11 +304,10 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/40000004/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("article_id not found");
+        expect(body.msg).toBe("ID not found");
       });
   });
 });
-
 describe("POST /api/articles/:article_id/comments", () => {
   test("returns a 201 status code when passed a new comment with the correct properties", () => {
     const newComment = {
@@ -375,7 +372,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(testComment)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("article_id not found");
+        expect(body.msg).toBe("ID not found");
       });
   });
   test("returns a 404 status code when passed a comment object with a nonexisting username property", () => {
@@ -426,7 +423,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       .send()
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("comment_id not found");
+        expect(body.msg).toBe("ID not found");
       });
   });
   test("returns 400 status code and message when passed an invalid comment id", () => {
@@ -542,7 +539,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(testPatch)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("article_id not found");
+        expect(body.msg).toBe("ID not found");
       });
   });
   test("returns a 400 status code and message when passed a valid object to an id too large for an integer", () => {
@@ -749,7 +746,7 @@ describe("PATCH /api/comments/:comment_id", () => {
       .send(testPatch)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("comment_id not found");
+        expect(body.msg).toBe("ID not found");
       });
   });
   test("returns a 400 status code and message when passed a valid object to an id too large for an integer", () => {
@@ -798,6 +795,135 @@ describe("PATCH /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid value");
+      });
+  });
+});
+describe("POST /api/articles", () => {
+  test("returns a 201 status code and article object when passed a new article with the correct properties", () => {
+    const newArticle = {
+      title: "Mitch wins Nobel Prize for literature!",
+      topic: "mitch",
+      author: "rogersop",
+      body: "Nobel love Mitch and his wonderful, unique typing style",
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const { article } = body;
+
+        expect(article[0]).toMatchObject({
+          article_id: 14,
+          title: "Mitch wins Nobel Prize for literature!",
+          topic: "mitch",
+          author: "rogersop",
+          body: "Nobel love Mitch and his wonderful, unique typing style",
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: "0",
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("returns a new article object when passed a valid article, returning a default img property when not provided", () => {
+    const newArticle = {
+      title: "Mitch wins Nobel Prize for literature!",
+      topic: "mitch",
+      author: "rogersop",
+      body: "Nobel love Mitch and his wonderful, unique typing style",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article[0]).toMatchObject({
+          article_id: 14,
+          title: "Mitch wins Nobel Prize for literature!",
+          topic: "mitch",
+          author: "rogersop",
+          body: "Nobel love Mitch and his wonderful, unique typing style",
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: "0",
+          article_img_url:
+            "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("returns a 400 status code and message when passed an article object with no body property", () => {
+    const testArticle = {
+      title: "Mitch wins Nobel Prize for literature!",
+      topic: "mitch",
+      author: "rogersop",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(testArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Insufficient data");
+      });
+  });
+  test("returns a 400 status code and message when passed an article object with no author property", () => {
+    const testArticle = {
+      title: "Mitch wins Nobel Prize for literature!",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(testArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Insufficient data");
+      });
+  });
+  test("returns a 400 status code and message when passed an article object with no title property", () => {
+    const testArticle = {
+      author: "rogersop",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(testArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Insufficient data");
+      });
+  });
+  test("returns a 404 status code and message when passed a valid article object with nonexistent author", () => {
+    const testArticle = {
+      author: "rogersoooooop",
+      topic: "mitch",
+      title: "new title",
+      body: "Nobel love Mitch and his wonderful, unique typing style",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(testArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("username not found");
+      });
+  });
+  test("returns a 404 status code and message when passed a valid article object with nonexistent topic", () => {
+    const testArticle = {
+      author: "rogersop",
+      topic: "no such topic",
+      title: "new title",
+      body: "Nobel love Mitch and his wonderful, unique typing style",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(testArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("topic not found");
       });
   });
 });

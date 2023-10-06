@@ -28,6 +28,14 @@ exports.checkValueExists = async (table, column, value) => {
   const query = format(`SELECT * FROM %I WHERE %I = $1;`, table, column);
   const dbOutput = await db.query(query, [value]);
 
+  if (column === "slug") {
+    column = "topic";
+  }
+
+  if (/_id/i.test(column)) {
+    column = "ID";
+  }
+
   if (dbOutput.rows.length === 0) {
     return Promise.reject({
       status: 404,
