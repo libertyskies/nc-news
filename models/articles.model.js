@@ -27,8 +27,8 @@ exports.fetchArticle = async (
   sortby = "date",
   order = "DESC",
   topic,
-  limit = 10,
-  p
+  limit,
+  p = 1
 ) => {
   const validSortBys = {
     date: "created_at",
@@ -74,9 +74,10 @@ exports.fetchArticle = async (
   GROUP BY articles.title, articles.article_id
   ORDER BY ${validSortBys[sortby]} ${order}`;
 
-  if (p) {
-    query += `OFFSET $${values[values.length - 1]} ROWS FETCH NEXT `;
-    values.push(p);
+  if (limit !== undefined) {
+    query += ` OFFSET ${(p - 1) * limit} ROWS FETCH NEXT ${limit} ROWS ONLY;`;
+  } else {
+    query += `;`;
   }
 
   const { rows } = await db.query(query, values);

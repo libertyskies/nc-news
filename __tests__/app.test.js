@@ -986,6 +986,22 @@ describe("POST /api/topics", () => {
       });
   });
 });
-describe.only("GET /api/articles?limit", () => {
-  test("returns 200 status code", () => {});
+describe("GET /api/articles?limit", () => {
+  test("returns 200 status code and adheres to limit query", () => {
+    return request(app)
+      .get("/api/articles?limit=10")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(10);
+      });
+  });
+  test("returns 200 status code and allows for a page query", () => {
+    return request(app)
+      .get("/api/articles?sortby=id&order=asc&limit=2&p1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(2);
+        expect(body.articles[0].article_id).toBe(1);
+      });
+  });
 });
