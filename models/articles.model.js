@@ -23,7 +23,13 @@ GROUP BY articles.title, articles.article_id;`;
   return rows;
 };
 
-exports.fetchArticle = async (sortby = "date", order = "DESC", topic) => {
+exports.fetchArticle = async (
+  sortby = "date",
+  order = "DESC",
+  topic,
+  limit = 10,
+  p
+) => {
   const validSortBys = {
     date: "created_at",
     created_at: "created_at",
@@ -44,7 +50,6 @@ exports.fetchArticle = async (sortby = "date", order = "DESC", topic) => {
   }
 
   order = order.toUpperCase();
-
   if (order !== "ASC" && order !== "DESC") {
     return Promise.reject({
       status: 400,
@@ -67,7 +72,12 @@ exports.fetchArticle = async (sortby = "date", order = "DESC", topic) => {
 
   query += `
   GROUP BY articles.title, articles.article_id
-  ORDER BY ${validSortBys[sortby]} ${order};`;
+  ORDER BY ${validSortBys[sortby]} ${order}`;
+
+  if (p) {
+    query += `OFFSET $${values[values.length - 1]} ROWS FETCH NEXT `;
+    values.push(p);
+  }
 
   const { rows } = await db.query(query, values);
 
